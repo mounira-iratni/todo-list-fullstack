@@ -2,11 +2,11 @@ import os
 import dj_database_url
 from .base import *
 import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
 
-try:
-    from sentry_sdk.integrations.django import DjangoIntegration  # type: ignore[import-not-found]
-except ImportError:
-    DjangoIntegration = None
+
+# ==============================================================================
+# SÉCURITÉ
 # ==============================================================================
 
 SECRET_KEY = os.environ.get('SECRET_KEY')
