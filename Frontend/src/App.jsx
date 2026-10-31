@@ -15,7 +15,8 @@ function App() {
 
   //  URL DE L'API DE DJANGO
   //const API_URL = "http://127.0.0.1:8000/api";
-  const API_URL = "https://todo-list-fullstack-ry61.onrender.com/api";
+  //const API_URL = "https://todo-list-fullstack-ry61.onrender.com/api";
+  const API_URL = axios.create({baseURL: `${import.meta.env.VITE_API_URL}/api`});
   
 
   useEffect(() => {
