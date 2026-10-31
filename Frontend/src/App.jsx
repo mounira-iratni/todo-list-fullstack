@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import * as Sentry from "@sentry/react";
 import "./styles/main.css";
 import CategoryForm from "./components/CategoryForm";
 import TaskForm from "./components/TaskForm";
@@ -17,7 +18,7 @@ function App() {
   //const API_URL = "http://127.0.0.1:8000/api";
   //const API_URL = "https://todo-list-fullstack-ry61.onrender.com/api";
   const API_URL = `${import.meta.env.VITE_API_URL}/api`;
-  
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -32,6 +33,7 @@ function App() {
         setError(null);
       } catch (err) {
         console.error("Erreur au chargement :", err);
+        Sentry.captureException(err);
         setError("Impossible de se connecter au serveur Django.");
       } finally {
         setIsLoading(false);
@@ -48,6 +50,7 @@ function App() {
         setCategories([...categories, res.data]);
       })
       .catch(err => {
+        Sentry.captureException(err);
         console.error("Erreur catégorie :", err.response?.data);
         alert("Erreur : " + JSON.stringify(err.response?.data));
       });
@@ -63,6 +66,7 @@ function App() {
       setTasks([...tasks, res.data]);
     })
     .catch(err => {
+      Sentry.captureException(err);
       console.error("Erreur tâche :", err.response?.data);
     });
   };
@@ -73,7 +77,10 @@ function App() {
       .then(() => {
         setTasks(tasks.filter(t => t.id !== id));
       })
-      .catch(err => console.error(err));
+      .catch(err => {
+        Sentry.captureException(err);
+        console.error(err);
+      });
   };
 
   // Modifier le statut d'une tâche (terminée ou non)
@@ -84,7 +91,10 @@ function App() {
     .then(res => {
       setTasks(tasks.map(t => t.id === task.id ? res.data : t));
     })
-    .catch(err => console.error(err));
+    .catch(err => {
+      Sentry.captureException(err);
+      console.error(err);
+    });
   };
 
 
@@ -98,7 +108,7 @@ function App() {
     <div className="app-container">
       <h1>Ma To-Do List par Catégories</h1>
 
-      
+
       {error && <div className="error-banner">{error}</div>}
 
       <CategoryForm addCategory={addCategory} />
@@ -107,12 +117,12 @@ function App() {
         <select
           className="filter-select"
           value={filter}
-          onChange={(e) => setFilter(e.target.value)} 
+          onChange={(e) => setFilter(e.target.value)}
         >
           <option value="Toutes">Toutes les catégories</option>
           {categories.map(cat => (
             <option key={cat.id} value={cat.id}>
-              {cat.name} 
+              {cat.name}
             </option>
           ))}
         </select>
@@ -129,6 +139,11 @@ function App() {
           toggleTask={toggleTask}
         />
       )}
+
+      {/* Bouton de test Sentry : à retirer après vérification */}
+      <button onClick={() => { throw new Error("Test Sentry React"); }}>
+        Tester Sentry
+      </button>
     </div>
   );
 }
