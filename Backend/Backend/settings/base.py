@@ -27,6 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     'todo-list-fullstack-ry61.onrender.com', 
+    'todo-list-fullstack-lq4m.onrender.com',
     'localhost', 
     '127.0.0.1'
 ]
